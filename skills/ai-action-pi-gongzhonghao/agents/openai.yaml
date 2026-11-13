@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI行动π · 公众号文章创作与排版"
+  short_description: "供团队轮流执笔，完成公众号资料核对、写稿、配图、墨绿色排版与导出"
+  default_prompt: "使用 $ai-action-pi-gongzhonghao，根据本期资料完成公众号写稿、配图、墨绿色排版与导出。"

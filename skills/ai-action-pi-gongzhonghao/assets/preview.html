@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI行动π · 公众号排版预览</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#e6ebe6;color:#203429;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.tools{max-width:680px;margin:24px auto 20px;padding:22px 24px;background:#f7faf6;border:1px solid #d1ddcf;border-radius:12px}.tools h2{font-size:19px;margin:0 0 10px}.tools p{font-size:13px;line-height:1.8;margin:8px 0}.buttons{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 10px}button{border:1px solid #b5c4b4;background:white;color:#213a2a;border-radius:7px;padding:10px 13px;font-size:14px;cursor:pointer}button.primary{background:#234d33;color:white;border-color:#234d33}button:focus-visible{outline:3px solid #699845;outline-offset:2px}.frame{max-width:420px;margin:0 auto 40px;box-shadow:0 10px 36px #132b1d20}#status{min-height:23px;color:#275d30;font-weight:600}.note{max-width:640px;margin:20px auto 40px;text-align:center;padding:0 18px;font-size:12px;line-height:1.8;color:#657366}
+@media(max-width:700px){.tools{margin:10px 10px 18px;padding:18px}.frame{margin-bottom:20px;box-shadow:none}.tools h2{font-size:17px}}@media print{.tools,.note{display:none}body{background:#0F1410}.frame{max-width:640px;box-shadow:none;margin:0 auto}}
+</style></head><body>
+<section class="tools"><h2>公众号排版预览</h2><p>墨绿色图文 · 共 @@COUNT@@ 张配图</p>
+<div class="buttons"><button id="copy-body" class="primary">复制正文排版</button><button id="toggle-images">查看图片占位</button><button id="copy-title">复制标题</button><button id="copy-summary">复制摘要</button><button id="toggle-width">切换宽屏预览</button></div>
+<p>粘贴正文后，请从「配图」文件夹上传对应图片，替换编号提示。背景、照片和段落间距以公众号后台手机预览为准。</p>
+<p id="status" role="status" aria-live="polite">默认按手机宽度显示。</p></section>
+<main class="frame">@@ARTICLE@@</main><p class="note">正文复制不包含本页操作区。本地检查不代表公众号后台效果已验证。</p>
+<script>
+const articleTitle=@@TITLE_JSON@@,articleSummary=@@SUMMARY_JSON@@,imageFiles=@@FILES_JSON@@;
+const imagePlaceholders=@@PLACEHOLDERS_JSON@@;
+const status=document.getElementById('status');
+let draftMode=false;
+document.getElementById('toggle-images').onclick=e=>{
+ draftMode=!draftMode;
+ document.querySelectorAll('#article [data-image-placeholder]').forEach(el=>el.remove());
+ document.querySelectorAll('#article img').forEach(img=>{
+  if(draftMode)img.insertAdjacentHTML('beforebegin',imagePlaceholders[Number(img.dataset.imageNumber)-1]);
+  img.style.display=draftMode?'none':'block';
+ });
+ e.target.textContent=draftMode?'查看配图效果':'查看图片占位';
+ status.textContent=draftMode?'已显示图片占位、对应文件和图注。':'已显示实际配图效果。';
+};
+function copyData(rich,plain){
+ let gotEvent=false;
+ const listener=e=>{e.preventDefault();e.clipboardData.setData('text/plain',plain);if(rich)e.clipboardData.setData('text/html',rich);gotEvent=true;};
+ document.addEventListener('copy',listener,{once:true});
+ const range=document.createRange();range.selectNodeContents(document.getElementById('article'));
+ const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);
+ const ok=document.execCommand('copy');selection.removeAllRanges();document.removeEventListener('copy',listener);
+ return ok&&gotEvent;
+}
+document.getElementById('copy-body').onclick=()=>{
+ const cloned=document.getElementById('article').cloneNode(true);cloned.removeAttribute('id');
+ cloned.querySelectorAll('[data-image-placeholder]').forEach(el=>el.remove());
+ cloned.querySelectorAll('img').forEach(img=>{const n=Number(img.dataset.imageNumber);const p=document.createElement('p');p.textContent='【配图'+String(n).padStart(2,'0')+'：'+imageFiles[n-1]+'】';p.setAttribute('style','margin:12px 0;padding:12px 10px;font-size:14px;line-height:1.8;text-align:center;color:#BDF42B;border:1px dashed #718759;');img.replaceWith(p);});
+ cloned.querySelectorAll('*').forEach(el=>Array.from(el.attributes).forEach(a=>{if(a.name.startsWith('data-'))el.removeAttribute(a.name);}));
+ const ok=copyData(cloned.outerHTML,cloned.textContent);
+ status.textContent=ok?'已复制正文与样式。请按提示上传'+imageFiles.length+'张图片。':'未能复制，请手动选择正文复制，并按顺序上传图片。';
+};
+document.getElementById('copy-title').onclick=()=>{status.textContent=copyData('',articleTitle)?'标题已复制。':'未能复制，请使用标题与摘要文件。';};
+document.getElementById('copy-summary').onclick=()=>{status.textContent=copyData('',articleSummary)?'摘要已复制。':'未能复制，请使用标题与摘要文件。';};
+let wide=false;document.getElementById('toggle-width').onclick=e=>{wide=!wide;document.querySelector('.frame').style.maxWidth=wide?'640px':'420px';e.target.textContent=wide?'切换手机预览':'切换宽屏预览';status.textContent=wide?'已切换为宽屏预览。':'已切换为手机预览。';};
+</script></body></html>

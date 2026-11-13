@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "brand": "AI行动π",
+  "edition": "写作练习 · 示例",
+  "author": "轮值作者甲（示例代称）",
+  "title_lines": [
+    "把需求说清楚",
+    "让 AI 帮你写初稿"
+  ],
+  "subtitle": "从一则熟悉的活动介绍开始",
+  "demo": true,
+  "checks": {
+    "required_phrases": [
+      "本篇为流程演示"
+    ],
+    "forbidden_phrases": [
+      "299元",
+      "限15人",
+      "11月19日"
+    ]
+  },
+  "images": [
+    {
+      "id": "brief",
+      "path": "media/brief.png",
+      "kind": "illustration",
+      "alt": "背景、读者和目标三个写作需求要素",
+      "caption": "演示配图：先说明背景、读者与目标。",
+      "use": true
+    },
+    {
+      "id": "review",
+      "path": "media/review.png",
+      "kind": "illustration",
+      "alt": "从初稿到事实核对再到表达修改的流程",
+      "caption": "演示配图：初稿之后，仍需核对和修改。",
+      "use": true
+    },
+    {
+      "id": "loop",
+      "path": "media/loop.png",
+      "kind": "illustration",
+      "alt": "练习、修改与复用的循环",
+      "caption": "演示配图：从一次练习留下可复用的方法。",
+      "use": false,
+      "reason": "与结尾内容重复，本篇不使用。"
+    }
+  ]
+}
